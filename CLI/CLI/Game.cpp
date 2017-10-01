@@ -42,6 +42,7 @@ bool Game::init(){
 
 bool Game::play(){
 	while (gameGoing){
+		gameOver = false;
 		clearScreen(screen);
 		turn = playing ? 'X' : 'O';
 		cout << "\n Turno de " << turn << endl << endl;
@@ -78,15 +79,20 @@ bool Game::play(){
 		}
 		cout << endl;
 		
+		winer();
+
+		//connectToServer();
+
 		checkEnemyMove();
 		lastMoveBoard = board;
-		//connectToServer();
-		if (playing)
-			playing = !playMoveX();
-		else
-			playing = playMoveO();
+		
+		if (gameGoing && !gameOver){
+			if (playing)
+				playing = !playMoveX();
+			else
+				playing = playMoveO();
+		}
 
-		winer();
 	}
 
 	return true;
@@ -251,11 +257,12 @@ bool Game::playMoveO(){
 	return false;
 }
 
-void Game::winer(){
+bool Game::winer(){
 	for (size_t i = 0; i < 3; i++)
 	{
 		if (board[i][0] == board[i][1] && board[i][1] == board[i][2]){
 			gameGoing = false;
+			gameOver = true;
 			cout << "\nPlayer " << board[i][0] << " has win!" << endl;
 			break;
 		}
@@ -265,9 +272,22 @@ void Game::winer(){
 	{
 		if (board[0][i] == board[1][i] && board[1][i] == board[2][i]){
 			gameGoing = false;
-			cout << "\nPlayer " << board[i][0] << " has win!" << endl;
+			gameOver = true;
+			cout << "\nPlayer " << board[0][i] << " has win!" << endl;
 			break;
 		}
+	}
+
+
+	if (board[0][0] == board[1][1] && board[1][1] == board[2][2]){
+		gameGoing = false;
+		gameOver = true;
+		cout << "\nPlayer " << board[0][0] << " has win!" << endl;
+	}
+	else if (board[0][2] == board[1][1] && board[1][1] == board[2][0]){
+		gameGoing = false;
+		gameOver = true;
+		cout << "\nPlayer " << board[0][2] << " has win!" << endl;
 	}
 
 	if (!gameGoing){
@@ -283,11 +303,15 @@ void Game::winer(){
 			if (temp == 'y' || temp == 'Y'){
 				init();
 				ok = true;
+				return true;
 			}
-			else if (temp == 'n' || temp == 'N')
+			else if (temp == 'n' || temp == 'N'){
 				ok = true;
+				return true;
+			}
 		}
 	}
+	return false;
 }
 
 bool Game::connectToServer(){

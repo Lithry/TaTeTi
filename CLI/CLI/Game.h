@@ -26,9 +26,10 @@ private:
 	void checkEnemyMove();
 	bool playMoveX();
 	bool playMoveO();
-	void winer();
+	bool winer();
 	void clearScreen(HANDLE hConsole);
 	bool gameGoing;
+	bool gameOver;
 	bool playing;
 	HANDLE screen;
 	char** board;
