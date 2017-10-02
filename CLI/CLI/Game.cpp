@@ -258,37 +258,58 @@ bool Game::playMoveO(){
 }
 
 bool Game::winer(){
-	for (size_t i = 0; i < 3; i++)
-	{
-		if (board[i][0] == board[i][1] && board[i][1] == board[i][2]){
-			gameGoing = false;
-			gameOver = true;
-			cout << "\nPlayer " << board[i][0] << " has win!" << endl;
-			break;
+	bool draw = false;
+	int count = 0;
+	for (size_t i = 0; i < 3; i++){
+		for (size_t j = 0; j < 3; j++){
+			if (board[i][j] == 'X' || board[i][j] == 'O'){
+				count++;
+			}
 		}
 	}
 
-	for (size_t i = 0; i < 3; i++)
-	{
-		if (board[0][i] == board[1][i] && board[1][i] == board[2][i]){
+	if (count == 9){
+		draw = true;
+		gameOver = true;
+		gameGoing = false;
+	}
+
+	gameGoing = (draw) ? false : true;
+	if (gameGoing){
+
+		for (size_t i = 0; i < 3; i++)
+		{
+			if (board[i][0] == board[i][1] && board[i][1] == board[i][2]){
+				gameGoing = false;
+				gameOver = true;
+				cout << "\nPlayer " << board[i][0] << " has win!" << endl;
+				break;
+			}
+		}
+
+		for (size_t i = 0; i < 3; i++)
+		{
+			if (board[0][i] == board[1][i] && board[1][i] == board[2][i]){
+				gameGoing = false;
+				gameOver = true;
+				cout << "\nPlayer " << board[0][i] << " has win!" << endl;
+				break;
+			}
+		}
+
+		if (board[0][0] == board[1][1] && board[1][1] == board[2][2]){
 			gameGoing = false;
 			gameOver = true;
-			cout << "\nPlayer " << board[0][i] << " has win!" << endl;
-			break;
+			cout << "\nPlayer " << board[0][0] << " has win!" << endl;
+		}
+		else if (board[0][2] == board[1][1] && board[1][1] == board[2][0]){
+			gameGoing = false;
+			gameOver = true;
+			cout << "\nPlayer " << board[0][2] << " has win!" << endl;
 		}
 	}
-
-
-	if (board[0][0] == board[1][1] && board[1][1] == board[2][2]){
-		gameGoing = false;
-		gameOver = true;
-		cout << "\nPlayer " << board[0][0] << " has win!" << endl;
-	}
-	else if (board[0][2] == board[1][1] && board[1][1] == board[2][0]){
-		gameGoing = false;
-		gameOver = true;
-		cout << "\nPlayer " << board[0][2] << " has win!" << endl;
-	}
+	else
+		cout << "\nDraw!";
 
 	if (!gameGoing){
 		bool ok = false;
