@@ -81,8 +81,6 @@ bool Game::play(){
 		
 		winer();
 
-		//connectToServer();
-
 		checkEnemyMove();
 		lastMoveBoard = board;
 		
@@ -117,6 +115,7 @@ bool Game::playMoveX(){
 	case 1:
 		if (board[2][0] != 'X' && board[2][0] != 'O'){
 			board[2][0] = turn;
+			connectToServer("1X");
 			return true;
 		}
 		else
@@ -124,6 +123,7 @@ bool Game::playMoveX(){
 	case 2:
 		if (board[2][1] != 'X' && board[2][1] != 'O'){
 			board[2][1] = turn;
+			connectToServer("2X");
 			return true;
 		}
 		else
@@ -131,6 +131,7 @@ bool Game::playMoveX(){
 	case 3:
 		if (board[2][2] != 'X' && board[2][2] != 'O'){
 			board[2][2] = turn;
+			connectToServer("3X");
 			return true;
 		}
 		else
@@ -138,6 +139,7 @@ bool Game::playMoveX(){
 	case 4:
 		if (board[1][0] != 'X' && board[1][0] != 'O'){
 			board[1][0] = turn;
+			connectToServer("4X");
 			return true;
 		}
 		else
@@ -145,6 +147,7 @@ bool Game::playMoveX(){
 	case 5:
 		if (board[1][1] != 'X' && board[1][1] != 'O'){
 			board[1][1] = turn;
+			connectToServer("5X");
 			return true;
 		}
 		else
@@ -152,6 +155,7 @@ bool Game::playMoveX(){
 	case 6:
 		if (board[1][2] != 'X' && board[1][2] != 'O'){
 			board[1][2] = turn;
+			connectToServer("6X");
 			return true;
 		}
 		else
@@ -159,6 +163,7 @@ bool Game::playMoveX(){
 	case 7:
 		if (board[0][0] != 'X' && board[0][0] != 'O'){
 			board[0][0] = turn;
+			connectToServer("7X");
 			return true;
 		}
 		else
@@ -166,6 +171,7 @@ bool Game::playMoveX(){
 	case 8:
 		if (board[0][1] != 'X' && board[0][1] != 'O'){
 			board[0][1] = turn;
+			connectToServer("8X");
 			return true;
 		}
 		else
@@ -173,6 +179,7 @@ bool Game::playMoveX(){
 	case 9:
 		if (board[0][2] != 'X' && board[0][2] != 'O'){
 			board[0][2] = turn;
+			connectToServer("9X");
 			return true;
 		}
 		else
@@ -335,7 +342,7 @@ bool Game::winer(){
 	return false;
 }
 
-bool Game::connectToServer(){
+bool Game::connectToServer(std::string data){
 	struct sockaddr_in si_other;
 	int s, slen = sizeof(si_other);
 	char buf[BUFLEN];
@@ -367,8 +374,13 @@ bool Game::connectToServer(){
 	//start communication
 	while (playing)
 	{
-		printf("Enter message : ");
-		gets_s(message);
+		//printf("Enter message : ");
+		for (size_t i = 0; i < data.length(); i++)
+		{
+			message[i] = data[i];
+		}
+		message[data.length()] = '\0';
+		//gets_s(message);
 
 		//send the message
 		if (sendto(s, message, strlen(message), 0, (struct sockaddr *) &si_other, slen) == SOCKET_ERROR)
