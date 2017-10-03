@@ -1,13 +1,5 @@
 #include "UDP.h"
 
-/*#include<stdio.h>
-#include<winsock2.h>
-
-#pragma comment(lib,"ws2_32.lib") //Winsock Library
-
-#define BUFLEN 512  //Max length of buffer
-#define PORT 8888   //The port on which to listen for incoming data*/
-
 UDP::UDP(){}
 
 UDP::~UDP(){
@@ -73,9 +65,10 @@ bool UDP::bindSocket(){
 	return true;
 }
 
-bool UDP::communication(){
+bool UDP::waitingForData(std::string& data){
 	while (onComunication)
 	{
+
 		printf("Waiting for data...");
 		fflush(stdout);
 
@@ -93,13 +86,28 @@ bool UDP::communication(){
 		printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
 		printf("Data: %s\n", buf);
 
-		//now reply the client with the same data
-		if (sendto(s, buf, recv_len, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
-		{
-			printf("sendto() failed with error code : %d", WSAGetLastError());
-			return false;
-		}
+		data = buf;
+		lastIp = inet_ntoa(si_other.sin_addr);
 	}
 
 	return true;
+}
+
+bool UDP::reply(std::string r){
+	//now reply the client with the same data
+	for (size_t i = 0; i < r.length(); i++)
+	{
+		buf[i] = r[i];
+	}
+	buf[r.length()] = '\0';
+
+	if (sendto(s, buf, recv_len, 0, (struct sockaddr*) &si_other, slen) == SOCKET_ERROR)
+	{
+		printf("sendto() failed with error code : %d", WSAGetLastError());
+		return false;
+	}
+}
+
+std::string UDP::getLastIp(){
+	return lastIp;
 }

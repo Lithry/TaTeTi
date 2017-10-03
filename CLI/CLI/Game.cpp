@@ -8,12 +8,18 @@ Game::Game()
 	:
 	screen(GetStdHandle(STD_OUTPUT_HANDLE)),
 	board(NULL),
-	turn('X')
-{}
+	turnOf('X'),
+	reply(""),
+	timer(0.0f)
+{
+	connectToServer();
+	
+}
 
 Game::~Game(){
 	delete[] board;
-	delete[] lastMoveBoard;
+	closesocket(s);
+	WSACleanup();
 }
 
 bool Game::init(){
@@ -34,18 +40,32 @@ bool Game::init(){
 			board[i][j] = a[i][j];
 		}
 	}
-	lastMoveBoard = board;
-	gameGoing = true;
-	playing = true;
+	
+	wantToPlay();
+	
 	return true;
+}
+
+bool Game::wantToPlay(){
+	if (!sendMessage("1"))
+		return false;
+
+	reply = receiveReplay();
+
+	if (reply[0] == '1')
+		player = reply[1];
+
+	reply = "";
 }
 
 bool Game::play(){
 	while (gameGoing){
+		
+
+
 		gameOver = false;
 		clearScreen(screen);
-		turn = playing ? 'X' : 'O';
-		cout << "\n Turno de " << turn << endl << endl;
+		cout << "\n Turno de " << turnOf << endl << endl;
 
 		for (size_t i = 0; i < 3; i++){
 			switch (i)
@@ -80,15 +100,9 @@ bool Game::play(){
 		cout << endl;
 		
 		winer();
-
-		checkEnemyMove();
-		lastMoveBoard = board;
 		
 		if (gameGoing && !gameOver){
-			if (playing)
-				playing = !playMoveX();
-			else
-				playing = playMoveO();
+			playMove();
 		}
 
 	}
@@ -96,14 +110,7 @@ bool Game::play(){
 	return true;
 }
 
-void Game::checkEnemyMove(){
-	if (lastMoveBoard != board){
-		cout << " DIFERENTE";
-		playing = true;
-	}
-}
-
-bool Game::playMoveX(){
+void Game::playMove(){
 	int move = 0;
 
 	cout << " Use de Numpad to chose a position: ";
@@ -113,155 +120,47 @@ bool Game::playMoveX(){
 
 	switch (move){
 	case 1:
-		if (board[2][0] != 'X' && board[2][0] != 'O'){
-			board[2][0] = turn;
-			connectToServer("1X");
-			return true;
-		}
-		else
-			return false;
+		sendMessage("P1");
+		break;
 	case 2:
-		if (board[2][1] != 'X' && board[2][1] != 'O'){
-			board[2][1] = turn;
-			connectToServer("2X");
-			return true;
-		}
-		else
-			return false;
+		sendMessage("P2");
+		break;
 	case 3:
-		if (board[2][2] != 'X' && board[2][2] != 'O'){
-			board[2][2] = turn;
-			connectToServer("3X");
-			return true;
-		}
-		else
-			return false;
+		sendMessage("P3");
+		break;
 	case 4:
-		if (board[1][0] != 'X' && board[1][0] != 'O'){
-			board[1][0] = turn;
-			connectToServer("4X");
-			return true;
-		}
-		else
-			return false;
+		sendMessage("P4");
+		break;
 	case 5:
-		if (board[1][1] != 'X' && board[1][1] != 'O'){
-			board[1][1] = turn;
-			connectToServer("5X");
-			return true;
-		}
-		else
-			return false;
+		sendMessage("P5");
+		break;
 	case 6:
-		if (board[1][2] != 'X' && board[1][2] != 'O'){
-			board[1][2] = turn;
-			connectToServer("6X");
-			return true;
-		}
-		else
-			return false;
+		sendMessage("P6");
+		break;
 	case 7:
-		if (board[0][0] != 'X' && board[0][0] != 'O'){
-			board[0][0] = turn;
-			connectToServer("7X");
-			return true;
-		}
-		else
-			return false;
+		sendMessage("P7");
+		break;
 	case 8:
-		if (board[0][1] != 'X' && board[0][1] != 'O'){
-			board[0][1] = turn;
-			connectToServer("8X");
-			return true;
-		}
-		else
-			return false;
+		sendMessage("P8");
+		break;
 	case 9:
-		if (board[0][2] != 'X' && board[0][2] != 'O'){
-			board[0][2] = turn;
-			connectToServer("9X");
-			return true;
-		}
-		else
-			return false;
+		sendMessage("P9");
+		break;
 	}
-	return false;
-}
+	
+	reply = receiveReplay();
 
-bool Game::playMoveO(){
-	int move = 0;
-
-	cout << " Use de Numpad to chose a position: ";
-	cin.clear();
-	fflush(stdin);
-	cin >> move;
-
-	switch (move){
-	case 1:
-		if (board[2][0] != 'X' && board[2][0] != 'O'){
-			board[2][0] = turn;
-			return true;
-		}
-		else
-			return false;
-	case 2:
-		if (board[2][1] != 'X' && board[2][1] != 'O'){
-			board[2][1] = turn;
-			return true;
-		}
-		else
-			return false;
-	case 3:
-		if (board[2][2] != 'X' && board[2][2] != 'O'){
-			board[2][2] = turn;
-			return true;
-		}
-		else
-			return false;
-	case 4:
-		if (board[1][0] != 'X' && board[1][0] != 'O'){
-			board[1][0] = turn;
-			return true;
-		}
-		else
-			return false;
-	case 5:
-		if (board[1][1] != 'X' && board[1][1] != 'O'){
-			board[1][1] = turn;
-			return true;
-		}
-		else
-			return false;
-	case 6:
-		if (board[1][2] != 'X' && board[1][2] != 'O'){
-			board[1][2] = turn;
-			return true;
-		}
-		else
-			return false;
-	case 7:
-		if (board[0][0] != 'X' && board[0][0] != 'O'){
-			board[0][0] = turn;
-			return true;
-		}
-		else
-			return false;
-	case 8:
-		if (board[0][1] != 'X' && board[0][1] != 'O'){
-			board[0][1] = turn;
-			return true;
-		}
-		else
-			return false;
-	case 9:
-		if (board[0][2] != 'X' && board[0][2] != 'O'){
-			board[0][2] = turn;
-			return true;
-		}
-		else
-			return false;
+	if (reply[0] == 'B'){
+		board[0][0] = reply[1];
+		board[0][1] = reply[2];
+		board[0][2] = reply[3];
+		board[1][0] = reply[4];
+		board[1][1] = reply[5];
+		board[1][2] = reply[6];
+		board[2][0] = reply[7];
+		board[2][2] = reply[8];
+		board[2][3] = reply[9];
 	}
-	return false;
 }
 
 bool Game::winer(){
@@ -342,13 +241,7 @@ bool Game::winer(){
 	return false;
 }
 
-bool Game::connectToServer(std::string data){
-	struct sockaddr_in si_other;
-	int s, slen = sizeof(si_other);
-	char buf[BUFLEN];
-	char message[BUFLEN];
-	WSADATA wsa;
-
+bool Game::connectToServer(){
 	//Initialise winsock
 	printf("\nInitialising Winsock...");
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
@@ -371,6 +264,10 @@ bool Game::connectToServer(std::string data){
 	si_other.sin_port = htons(PORT);
 	si_other.sin_addr.S_un.S_addr = inet_addr(SERVER);
 
+	return true;
+}
+
+bool Game::sendMessage(std::string data){
 	//start communication
 	while (playing)
 	{
@@ -389,24 +286,22 @@ bool Game::connectToServer(std::string data){
 			return false;
 		}
 
-		//receive a reply and print it
-		//clear the buffer by filling null, it might have previously received data
-		memset(buf, '\0', BUFLEN);
-		//try to receive some data, this is a blocking call
-		if (recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, &slen) == SOCKET_ERROR)
-		{
-			printf("recvfrom() failed with error code : %d", WSAGetLastError());
-			return false;
-		}
+		
+	}
+}
 
-		puts(buf);
-		playing = false;
+std::string Game::receiveReplay(){
+	//receive a reply and print it
+	//clear the buffer by filling null, it might have previously received data
+	memset(buf, '\0', BUFLEN);
+	//try to receive some data, this is a blocking call
+	if (recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, &slen) == SOCKET_ERROR)
+	{
+		printf("recvfrom() failed with error code : %d", WSAGetLastError());
+		return false;
 	}
 
-	closesocket(s);
-	WSACleanup();
-
-	return true;
+	return buf;
 }
 
 void Game::clearScreen(HANDLE hConsole){

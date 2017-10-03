@@ -1,13 +1,13 @@
-#include "UDP.h"
+#include "TaTeTiServer.h"
 
 int main(){
 
-	UDP* server = new UDP();
-	if (!server->init()){
+	TaTeTiServer* game = new TaTeTiServer();
+	if (!game->init()){
 		exit(EXIT_FAILURE);
 	}
 
-	if (!server->communication()){
+	if (!game->run()){
 		exit(EXIT_FAILURE);
 	}
 

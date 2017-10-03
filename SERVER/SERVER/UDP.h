@@ -3,8 +3,9 @@
 
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 
-#include<stdio.h>
-#include<winsock2.h>
+#include <stdio.h>
+#include <iostream>
+#include <winsock2.h>
 
 #pragma comment(lib,"ws2_32.lib") //Winsock Library
 
@@ -16,7 +17,9 @@ public:
 	UDP();
 	~UDP();
 	bool init();
-	bool communication();
+	bool waitingForData(std::string& data);
+	bool reply(std::string r);
+	std::string getLastIp();
 private:
 	bool createSocket();
 	bool prepareStructure();
@@ -27,5 +30,6 @@ private:
 	char buf[BUFLEN];
 	WSADATA wsa;
 	bool onComunication;
+	std::string lastIp;
 };
 #endif

@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include <iostream>
+#include <chrono>
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 #include<stdio.h>
@@ -22,10 +23,11 @@ public:
 	bool init();
 	bool play();
 private:
-	bool connectToServer(std::string data);
-	void checkEnemyMove();
-	bool playMoveX();
-	bool playMoveO();
+	bool connectToServer();
+	bool wantToPlay();
+	bool sendMessage(std::string data);
+	std::string receiveReplay();
+	void playMove();
 	bool winer();
 	void clearScreen(HANDLE hConsole);
 	bool gameGoing;
@@ -33,7 +35,15 @@ private:
 	bool playing;
 	HANDLE screen;
 	char** board;
-	char** lastMoveBoard;
-	char turn;
+	char player;
+	char turnOf;
+	float timer;
+
+	struct sockaddr_in si_other;
+	int s, slen = sizeof(si_other);
+	char buf[BUFLEN];
+	char message[BUFLEN];
+	WSADATA wsa;
+	std::string reply;
 };
 #endif
