@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{1B6E50D8-2C35-4535-825A-92DD1938E72B}</ProjectGuid>
+    <ProjectGuid>{3A23BC5A-A360-402C-A81D-5688CDC64C5D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>SERVER</RootNamespace>
+    <RootNamespace>Server</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -79,12 +79,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="TaTeTiServer.cpp" />
-    <ClCompile Include="UDP.cpp" />
+    <ClCompile Include="TatetiServer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="TaTeTiServer.h" />
-    <ClInclude Include="UDP.h" />
+    <ClInclude Include="TatetiServer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

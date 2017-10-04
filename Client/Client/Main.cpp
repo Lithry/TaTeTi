@@ -1,21 +1,22 @@
 #include <iostream>
 
-#include "TatetiServer.h"
+#include "TatetiClient.h"
 
 void main(){
-	TatetiServer tateti;
+	TatetiClient client;
 
-	if (!tateti.Init()){
+	if (!client.Init()){
 		std::cin.clear();
 		fflush(stdin);
 		std::cin.get();
 		exit(EXIT_FAILURE);
 	}
 
-	if (!tateti.UDPConnect()){
+	if (!client.Run()){
 		std::cin.clear();
 		fflush(stdin);
 		std::cin.get();
 		exit(EXIT_FAILURE);
 	}
+
 }

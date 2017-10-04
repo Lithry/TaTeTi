@@ -15,21 +15,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="UDP.cpp">
+    <ClCompile Include="TatetiServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TaTeTiServer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="UDP.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TaTeTiServer.h">
+    <ClInclude Include="TatetiServer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

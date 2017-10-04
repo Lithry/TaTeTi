@@ -1,34 +1,46 @@
 #ifndef TATETISERVER_H
 #define TATETISERVER_H
 
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
+#include <stdio.h>
 #include <iostream>
-#include "UDP.h"
+#include <winsock2.h>
 
-class TaTeTiServer{
+#pragma comment(lib,"ws2_32.lib") //Winsock Library
+
+#define BUFLEN 512  //Max length of buffer
+#define PORT 8888   //The port on which to listen for incoming data
+
+class TatetiServer{
 public:
-	TaTeTiServer();
-	~TaTeTiServer();
-	bool init();
-	bool run();
-	
+	TatetiServer();
+	~TatetiServer();
+	bool Init();
+	bool UDPConnect();
 private:
-	bool waitingForPlayer();
-	bool play();
-	void makeAMove(char place, char player);
-	bool giveBoard();
+	std::string interpretMessage(std::string m);
+	
+	std::string SetPlayer();
+	std::string PlayersSets();
+	std::string TurnOf();
+	std::string GetBoard();
+	std::string MakeMove(char pos, char player);
+	std::string Winner();
 
 
-	std::string player1Id;
-	char player1;
-	std::string player2Id;
-	char player2;
-	UDP server;
-	std::string data;
-	bool waitingForPlayers;
-	bool playing;
-	bool turnPlayer1;
-
+	bool turn1;
 	char** board;
+	std::string lastIp;
+	std::string player1Ip;
+	std::string player2Ip;
 
+
+	SOCKET s;
+	struct sockaddr_in server, si_other;
+	int slen, recv_len;
+	char buf[BUFLEN];
+	WSADATA wsa;
+	bool running;
 };
 #endif
