@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string>
 #include <cstring>
+#include <conio.h>
 #include <winsock2.h>
 
 #pragma comment(lib,"ws2_32.lib") //Winsock Library
@@ -78,6 +79,7 @@ private:
 
 
 	void clearScreen(HANDLE hConsole);
+	void CrearKeyboardBuffer();
 	HANDLE screen;
 };
 #endif

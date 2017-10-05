@@ -7,6 +7,7 @@ TatetiClient::TatetiClient(){}
 TatetiClient::~TatetiClient(){
 	closesocket(s);
 	WSACleanup();
+	CrearKeyboardBuffer();
 }
 
 void TatetiClient::SetServerIp() {
@@ -123,9 +124,9 @@ bool TatetiClient::GetBoard(){
 
 void TatetiClient::ShowBoard(){
 	std::cout << "\t " << b1 << " | " << b2 << " | " << b3 << std::endl;
-	std::cout << "\t" << "-----------" << std::endl << std::endl;
+	std::cout << "\t" << "-----------" << std::endl;
 	std::cout << "\t " << b4 << " | " << b5 << " | " << b6 << std::endl;
-	std::cout << "\t" << "-----------" << std::endl << std::endl;
+	std::cout << "\t" << "-----------" << std::endl;
 	std::cout << "\t " << b7 << " | " << b8 << " | " << b9 << std::endl;
 	std::cout << std::endl;
 }
@@ -147,9 +148,9 @@ bool TatetiClient::MakeMove(){
 
 	fflush(stdin);
 	std::cin.clear();
-	std::string trash = "\n";
-	std::cin >> trash;
-	std::cin.ignore(INT_MAX, '\n');
+	
+	//std::cin.ignore(INT_MAX, '\n');
+	CrearKeyboardBuffer();
 	std::cout << " Use de Numpad to chose a position: ";
 	
 	std::cin >> move;
@@ -411,4 +412,11 @@ void TatetiClient::clearScreen(HANDLE hConsole){
 	// Put the cursor at its home coordinates.
 
 	SetConsoleCursorPosition(hConsole, coordScreen);
+}
+
+void TatetiClient::CrearKeyboardBuffer(){
+	while (_kbhit())
+	{
+		_getche();
+	}
 }
