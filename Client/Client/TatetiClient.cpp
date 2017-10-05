@@ -77,6 +77,7 @@ bool TatetiClient::Run(){
 			GetWinner();
 		}
 
+		GetBoard();
 		if (winner){
 			clearScreen(screen);
 			std::cout << "\n Ganador: " << playerWinner << std::endl << std::endl;
@@ -140,18 +141,24 @@ bool TatetiClient::MakeMove(){
 	int move = 0;
 	
 	do{
-	std::cout << " Use de Numpad to chose a position: ";
-	std::cin.clear();
-	std::cin.ignore();
+	clearScreen(screen);
+	std::cout << "\n Turno de " << turnOf << "\n\nPlayer: " << player << std::endl << std::endl;
+	ShowBoard();
+
 	fflush(stdin);
-	//std::cin >> move;
-
-	while (!(std::cin >> move)) {
+	std::cin.clear();
+	std::string trash = "\n";
+	std::cin >> trash;
+	std::cin.ignore(INT_MAX, '\n');
+	std::cout << " Use de Numpad to chose a position: ";
+	
+	std::cin >> move;
+	if (std::cin.fail()) {
 		std::cin.clear();
-		std::cin.ignore();
-		std::cout << " Use de Numpad to chose a position: ";
+		fflush(stdin);
+		std::cout << " Comando Incorrecto";
+		std::cin.ignore(99, '\n');
 	}
-
 	} while (move < 1 || move > 9);
 	
 
@@ -311,7 +318,7 @@ void TatetiClient::interpretMessage(std::string reply){
 		
 		if (b1l != b1 || b2l != b2 || b3l != b3 || b4l != b4 || b5l != b5 || b6l != b6 || b7l != b7 || b8l != b8 || b9l != b9) {
 			clearScreen(screen);
-			std::cout << "\n Turno de " << turnOf << "\n\nPlayer: " << player << std::endl << std::endl;
+			std::cout << "\n Turno de " << turnOf << "\n\n Player: " << player << std::endl << std::endl;
 			ShowBoard();
 			b1l = b1;
 			b2l = b2;
@@ -327,7 +334,7 @@ void TatetiClient::interpretMessage(std::string reply){
 
 	if (reply[0] == 'R') {
 		clearScreen(screen);
-		std::cout << "\n Turno de " << turnOf << "\n\nPlayer: " << player << std::endl << std::endl;
+		std::cout << "\n Turno de " << turnOf << "\n\n Player: " << player << std::endl << std::endl;
 		ShowBoard();
 	}
 
@@ -335,7 +342,7 @@ void TatetiClient::interpretMessage(std::string reply){
 		turnOf = reply[1];
 		if (turnOf != lastTurnOf) {
 			clearScreen(screen);
-			std::cout << "\n Turno de " << turnOf << "\n\nPlayer: " << player << std::endl << std::endl;
+			std::cout << "\n Turno de " << turnOf << "\n\n Player: " << player << std::endl << std::endl;
 			ShowBoard();
 			lastTurnOf = turnOf;
 		}
