@@ -63,6 +63,8 @@ bool TatetiServer::Init(){
 
 	player1Ip = "";
 	player2Ip = "";
+	running = true;
+	turn1 = true;
 
 	return true;
 }
@@ -178,54 +180,63 @@ std::string TatetiServer::MakeMove(char pos, char player){
 			if (board[2][0] != 'X' && board[2][0] != 'O'){
 				board[2][0] = player;
 				turn1 = (turn1) ? false : true;
+				return "R";
 			}
 			break;
 		case '2':
 			if (board[2][1] != 'X' && board[2][1] != 'O'){
 				board[2][1] = player;
 				turn1 = (turn1) ? false : true;
+				return "R";
 			}
 			break;
 		case '3':
 			if (board[2][2] != 'X' && board[2][2] != 'O'){
 				board[2][2] = player;
 				turn1 = (turn1) ? false : true;
+				return "R";
 			}
 			break;
 		case '4':
 			if (board[1][0] != 'X' && board[1][0] != 'O'){
 				board[1][0] = player;
 				turn1 = (turn1) ? false : true;
+				return "R";
 			}
 			break;
 		case '5':
 			if (board[1][1] != 'X' && board[1][1] != 'O'){
 				board[1][1] = player;
 				turn1 = (turn1) ? false : true;
+				return "R";
 			}
 			break;
 		case '6':
 			if (board[1][2] != 'X' && board[1][2] != 'O'){
 				board[1][2] = player;
 				turn1 = (turn1) ? false : true;
+				return "R";
 			}
 			break;
 		case '7':
 			if (board[0][0] != 'X' && board[0][0] != 'O'){
 				board[0][0] = player;
 				turn1 = (turn1) ? false : true;
+				return "R";
 			}
 			break;
 		case '8':
 			if (board[0][1] != 'X' && board[0][1] != 'O'){
 				board[0][1] = player;
 				turn1 = (turn1) ? false : true;
+				return "R";
 			}
 			break;
 		case '9':
 			if (board[0][2] != 'X' && board[0][2] != 'O'){
 				board[0][2] = player;
 				turn1 = (turn1) ? false : true;
+				return "R";
 			}
 			break;
 		}
@@ -250,24 +261,30 @@ std::string TatetiServer::Winner(){
 		for (size_t i = 0; i < 3; i++)
 		{
 			if (board[i][0] == board[i][1] && board[i][1] == board[i][2]){
-				return "W" + board[i][0];
-				break;
+				std::string r = "W";
+				r += board[i][0];
+				return r;
 			}
 		}
 
 		for (size_t i = 0; i < 3; i++)
 		{
 			if (board[0][i] == board[1][i] && board[1][i] == board[2][i]){
-				return "W" + board[0][i];
-				break;
+				std::string r = "W";
+				r += board[0][i];
+				return r;
 			}
 		}
 
 		if (board[0][0] == board[1][1] && board[1][1] == board[2][2]){
-			return "W" + board[0][0];
+			std::string r = "W";
+			r += board[0][0];
+			return r;
 		}
 		else if (board[0][2] == board[1][1] && board[1][1] == board[2][0]){
-			return "W" + board[0][2];
+			std::string r = "W";
+			r += board[0][2];
+			return r;
 		}
 	}
 

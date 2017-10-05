@@ -1,14 +1,19 @@
 #include "TatetiClient.h"
 
-#include <iostream>
-#include <string>
-#include <cstring>
+#include<limits>
 
 TatetiClient::TatetiClient(){}
 
 TatetiClient::~TatetiClient(){
 	closesocket(s);
 	WSACleanup();
+}
+
+void TatetiClient::SetServerIp() {
+	std::cout << " Ingrese la IP del server: ";
+	std::cin.clear();
+	fflush(stdin);
+	std::cin >> serverIp;
 }
 
 bool TatetiClient::Init(){
@@ -33,34 +38,76 @@ bool TatetiClient::Init(){
 	//setup address structure
 	memset((char *)&si_other, 0, sizeof(si_other));
 	si_other.sin_family = AF_INET;
-	si_other.sin_port = htons(PORT);
-	si_other.sin_addr.S_un.S_addr = inet_addr(SERVER);
+	printf(" Ingrese la PORT del server: ");
+	gets_s(message);
+	si_other.sin_port = htons((unsigned short)strtoul(message, NULL, 0));
+	printf(" Ingrese la IP del server: ");
+	gets_s(message);
+	si_other.sin_addr.S_un.S_addr = inet_addr(message);
+	//si_other.sin_addr.S_un.S_addr = inet_addr(SERVER);
 
+	player = '0';
 	running = true;
+	waitingPlayers = true;
+	gameGoing = false;
+	winner = false;
+	draw = false;
 	return true;
 }
 
 bool TatetiClient::Run(){
 	while (running){
-		clearScreen(screen);
-
-
-		GetBoard();
-		TurnOf();
 		
-		std::cout << "\n Turno de " << turnOf << std::endl << std::endl;
-		ShowBoard();
-
-		getWinner();
-
-
-		MakeMove();
-
-		if (gameGoing && !gameOver){
-			playMove();
+		std::cout << "\n Esperando a Jugadores..." << std::endl << std::endl;
+		while (waitingPlayers){
+			Prepare();
+			IsReady();
 		}
-		
 
+		clearScreen(screen);
+		TurnOf();
+		while (gameGoing){
+			GetBoard();
+			
+			if (turnOf == player)
+				MakeMove();
+			
+			TurnOf();
+
+			GetWinner();
+		}
+
+		if (winner){
+			clearScreen(screen);
+			std::cout << "\n Ganador: " << playerWinner << std::endl << std::endl;
+			ShowBoard();
+			running = false;
+		}
+
+		if (draw){
+			clearScreen(screen);
+			std::cout << "\n Empate!!! " << std::endl << std::endl;
+			ShowBoard();
+			running = false;
+		}
+	}
+
+	return true;
+}
+
+bool TatetiClient::Prepare() {
+	if (player == '0') {
+		if (!UDPConnect("1"))
+			return false;
+	}
+
+	return true;
+}
+
+bool TatetiClient::IsReady() {
+	if (player != '0') {
+		if (!UDPConnect("G"))
+			return false;
 	}
 
 	return true;
@@ -69,91 +116,136 @@ bool TatetiClient::Run(){
 bool TatetiClient::GetBoard(){
 	if (!UDPConnect("B"))
 		return false;
+
+	return true;
 }
 
 void TatetiClient::ShowBoard(){
-	for (size_t i = 0; i < 3; i++){
-		switch (i){
-		case 1:
-			std::cout << '\t' << "-----------" << std::endl << '\t';
-			break;
-		case 2:
-			std::cout << '\t' << "-----------" << std::endl << '\t';
-			break;
-		default:
-			std::cout << '\t';
-			break;
-		}
-		for (size_t j = 0; j < 3; j++){
-			switch (j){
-			case 0:
-				std::cout << ' ' << board[i][j] << " |";
-				break;
-			case 1:
-				std::cout << ' ' << board[i][j] << " |";
-				break;
-			default:
-				std::cout << ' ' << board[i][j];
-				break;
-			}
-
-		}
-		std::cout << std::endl;
-	}
+	std::cout << "\t " << b1 << " | " << b2 << " | " << b3 << std::endl;
+	std::cout << "\t" << "-----------" << std::endl << std::endl;
+	std::cout << "\t " << b4 << " | " << b5 << " | " << b6 << std::endl;
+	std::cout << "\t" << "-----------" << std::endl << std::endl;
+	std::cout << "\t " << b7 << " | " << b8 << " | " << b9 << std::endl;
 	std::cout << std::endl;
 }
 
 bool TatetiClient::TurnOf(){
 	if (!UDPConnect("T"))
 		return false;
+
+	return true;
 }
 
 bool TatetiClient::MakeMove(){
 	int move = 0;
-
+	
+	do{
 	std::cout << " Use de Numpad to chose a position: ";
 	std::cin.clear();
+	std::cin.ignore();
 	fflush(stdin);
-	std::cin >> move;
+	//std::cin >> move;
 
+	while (!(std::cin >> move)) {
+		std::cin.clear();
+		std::cin.ignore();
+		std::cout << " Use de Numpad to chose a position: ";
+	}
+
+	} while (move < 1 || move > 9);
+	
+
+	std::string message = "P";
 	switch (move){
 	case 1:
-		if (!UDPConnect("P1" + player))
+		if (player == 'X')
+			message += "1X";
+		else
+			message += "1O";
+
+		if (!UDPConnect(message))
 			return false;
 		break;
 	case 2:
-		if (!UDPConnect("P2" + player))
+		if (player == 'X')
+			message += "2X";
+		else
+			message += "2O";
+
+		if (!UDPConnect(message))
 			return false;
 		break;
 	case 3:
-		if (!UDPConnect("P3" + player))
+		if (player == 'X')
+			message += "3X";
+		else
+			message += "3O";
+
+		if (!UDPConnect(message))
 			return false;
 		break;
 	case 4:
-		if (!UDPConnect("P4" + player))
+		if (player == 'X')
+			message += "4X";
+		else
+			message += "4O";
+
+		if (!UDPConnect(message))
 			return false;
 		break;
 	case 5:
-		if (!UDPConnect("P5" + player))
+		if (player == 'X')
+			message += "5X";
+		else
+			message += "5O";
+
+		if (!UDPConnect(message))
 			return false;
 		break;
 	case 6:
-		if (!UDPConnect("P6" + player))
+		if (player == 'X')
+			message += "6X";
+		else
+			message += "6O";
+
+		if (!UDPConnect(message))
 			return false;
 		break;
 	case 7:
-		if (!UDPConnect("P7" + player))
+		if (player == 'X')
+			message += "7X";
+		else
+			message += "7O";
+
+		if (!UDPConnect(message))
 			return false;
 		break;
 	case 8:
-		if (!UDPConnect("P8" + player))
+		if (player == 'X')
+			message += "8X";
+		else
+			message += "8O";
+
+		if (!UDPConnect(message))
 			return false;
 		break;
 	case 9:
-		if (!UDPConnect("P9" + player))
+		if (player == 'X')
+			message += "9X";
+		else
+			message += "9O";
+
+		if (!UDPConnect(message))
 			return false;
 		break;
 	}
+
+	return true;
+}
+
+bool TatetiClient::GetWinner() {
+	if (!UDPConnect("W"))
+		return false;
 
 	return true;
 }
@@ -195,20 +287,80 @@ void TatetiClient::WriteMessage(char(&message)[BUFLEN], std::string messageToSen
 }
 
 void TatetiClient::interpretMessage(std::string reply){
-	if (reply[0] == 'B'){
-		board[0][0] = reply[1];
-		board[0][1] = reply[2];
-		board[0][2] = reply[3];
-		board[1][0] = reply[4];
-		board[1][1] = reply[5];
-		board[1][2] = reply[6];
-		board[2][0] = reply[7];
-		board[2][2] = reply[8];
-		board[2][3] = reply[9];
+	if (reply[0] == '1') {
+		player = reply[1];
+	}
+
+	if (reply[0] == 'G') {
+		if (reply[1] == '1') {
+			waitingPlayers = false;
+			gameGoing = true;
+		}
 	}
 	
-	if (reply[0] == 'T')
+	if (reply[0] == 'B'){
+		b1 = reply[1];
+		b2 = reply[2];
+		b3 = reply[3];
+		b4 = reply[4];
+		b5 = reply[5];
+		b6 = reply[6];
+		b7 = reply[7];
+		b8 = reply[8];
+		b9 = reply[9];
+		
+		if (b1l != b1 || b2l != b2 || b3l != b3 || b4l != b4 || b5l != b5 || b6l != b6 || b7l != b7 || b8l != b8 || b9l != b9) {
+			clearScreen(screen);
+			std::cout << "\n Turno de " << turnOf << "\n\nPlayer: " << player << std::endl << std::endl;
+			ShowBoard();
+			b1l = b1;
+			b2l = b2;
+			b3l = b3;
+			b4l = b4;
+			b5l = b5;
+			b6l = b6;
+			b7l = b7;
+			b8l = b8;
+			b9l = b9;
+		}
+	}
+
+	if (reply[0] == 'R') {
+		clearScreen(screen);
+		std::cout << "\n Turno de " << turnOf << "\n\nPlayer: " << player << std::endl << std::endl;
+		ShowBoard();
+	}
+
+	if (reply[0] == 'T') {
 		turnOf = reply[1];
+		if (turnOf != lastTurnOf) {
+			clearScreen(screen);
+			std::cout << "\n Turno de " << turnOf << "\n\nPlayer: " << player << std::endl << std::endl;
+			ShowBoard();
+			lastTurnOf = turnOf;
+		}
+	}
+
+	if (reply[0] == 'W') {
+		switch (reply[1]){
+		case 'X':
+			gameGoing = false;
+			winner = true;
+			playerWinner = reply[1];
+			break;
+		case 'O':
+			gameGoing = false;
+			winner = true;
+			playerWinner = reply[1];
+			break;
+		case 'D':
+			gameGoing = false;
+			draw = true;
+			break;
+		case '0':
+			break;
+		}
+	}
 }
 
 
@@ -220,7 +372,7 @@ void TatetiClient::interpretMessage(std::string reply){
 
 
 
-void Game::clearScreen(HANDLE hConsole){
+void TatetiClient::clearScreen(HANDLE hConsole){
 	COORD coordScreen = { 0, 0 };    // home for the cursor 
 	DWORD cCharsWritten;
 	CONSOLE_SCREEN_BUFFER_INFO csbi;

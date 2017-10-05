@@ -19,4 +19,9 @@ void main(){
 		exit(EXIT_FAILURE);
 	}
 
+	std::cin.clear();
+	std::cin.ignore();
+	fflush(stdin);
+	std::cin.get();
+
 }
