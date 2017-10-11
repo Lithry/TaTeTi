@@ -68,6 +68,7 @@ bool TatetiClient::Run(){
 		clearScreen(screen);
 		TurnOf();
 		while (gameGoing){
+			CrearKeyboardBuffer();
 			GetBoard();
 			
 			if (turnOf == player)
@@ -139,33 +140,38 @@ bool TatetiClient::TurnOf(){
 }
 
 bool TatetiClient::MakeMove(){
-	int move = 0;
+	//int move = 0;
+	std::string move = "";
 	
 	do{
 	clearScreen(screen);
 	std::cout << "\n Turno de " << turnOf << "\n\nPlayer: " << player << std::endl << std::endl;
+	
 	ShowBoard();
 
-	fflush(stdin);
+	fflush(stdout);
 	std::cin.clear();
 	
-	//std::cin.ignore(INT_MAX, '\n');
-	CrearKeyboardBuffer();
 	std::cout << " Use de Numpad to chose a position: ";
 	
-	std::cin >> move;
+	//std::scanf("%d", &move);
+	std::getline(std::cin, move);
+	
+
 	if (std::cin.fail()) {
 		std::cin.clear();
 		fflush(stdin);
 		std::cout << " Comando Incorrecto";
 		std::cin.ignore(99, '\n');
 	}
-	} while (move < 1 || move > 9);
+	} while (move.length() != 1 && (move[0] != '1' || move[0] != '2' || move[0] != '3' || move[0] != '4' || move[0] != '5' || move[0] != '6' ||
+		move[0] != '7' || move[0] != '8' || move[0] != '9'));
+	//} while (move < 1 || move > 9);
 	
 
 	std::string message = "P";
-	switch (move){
-	case 1:
+	switch (move[0]){
+	case '1':
 		if (player == 'X')
 			message += "1X";
 		else
@@ -174,7 +180,7 @@ bool TatetiClient::MakeMove(){
 		if (!UDPConnect(message))
 			return false;
 		break;
-	case 2:
+	case '2':
 		if (player == 'X')
 			message += "2X";
 		else
@@ -183,7 +189,7 @@ bool TatetiClient::MakeMove(){
 		if (!UDPConnect(message))
 			return false;
 		break;
-	case 3:
+	case '3':
 		if (player == 'X')
 			message += "3X";
 		else
@@ -192,7 +198,7 @@ bool TatetiClient::MakeMove(){
 		if (!UDPConnect(message))
 			return false;
 		break;
-	case 4:
+	case '4':
 		if (player == 'X')
 			message += "4X";
 		else
@@ -201,7 +207,7 @@ bool TatetiClient::MakeMove(){
 		if (!UDPConnect(message))
 			return false;
 		break;
-	case 5:
+	case '5':
 		if (player == 'X')
 			message += "5X";
 		else
@@ -210,7 +216,7 @@ bool TatetiClient::MakeMove(){
 		if (!UDPConnect(message))
 			return false;
 		break;
-	case 6:
+	case '6':
 		if (player == 'X')
 			message += "6X";
 		else
@@ -219,7 +225,7 @@ bool TatetiClient::MakeMove(){
 		if (!UDPConnect(message))
 			return false;
 		break;
-	case 7:
+	case '7':
 		if (player == 'X')
 			message += "7X";
 		else
@@ -228,7 +234,7 @@ bool TatetiClient::MakeMove(){
 		if (!UDPConnect(message))
 			return false;
 		break;
-	case 8:
+	case '8':
 		if (player == 'X')
 			message += "8X";
 		else
@@ -237,7 +243,7 @@ bool TatetiClient::MakeMove(){
 		if (!UDPConnect(message))
 			return false;
 		break;
-	case 9:
+	case '9':
 		if (player == 'X')
 			message += "9X";
 		else

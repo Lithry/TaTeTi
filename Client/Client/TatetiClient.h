@@ -52,11 +52,6 @@ private:
 	char playerWinner;
 	bool draw;
 
-
-
-	char** board;
-	char** lastBoard;
-
 	char b1;
 	char b2;
 	char b3;
